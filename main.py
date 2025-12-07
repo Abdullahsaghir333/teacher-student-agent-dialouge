@@ -224,31 +224,62 @@ if st.session_state.quiz_raw:
     st.text_area("Generated Quiz", st.session_state.quiz_raw, height=260)
 
     # Parse quiz
-    lines = st.session_state.quiz_raw.split("\n")
+import re
+import streamlit as st
+
+# --- Parse Quiz Using Regex ---
+
+def parse_quiz(text):
+    pattern = r"Q\d+\..*?(?=Q\d+\.|$)"
+    raw_questions = re.findall(pattern, text, flags=re.S)
+
     questions = []
-    q = {}
 
-    for line in lines:
-        if line.startswith("Q"):
-            q = {"question": line, "options": []}
-        elif line.startswith(("A)", "B)", "C)", "D)")):
-            q["options"].append(line)
-        elif line.startswith("Answer"):
-            q["answer"] = line.split(":")[1].strip()
-            questions.append(q)
+    for block in raw_questions:
+        question_match = re.search(r"(Q\d+\..+)", block)
+        options = re.findall(r"[A-D]\)\s.*", block)
+        answer_match = re.search(r"Answer:\s*([A-D])", block)
 
-    st.subheader("📝 Take the Quiz")
+        if question_match and options and answer_match:
+            questions.append({
+                "question": question_match.group(1).strip(),
+                "options": options,
+                "answer": answer_match.group(1).strip()
+            })
+    return questions
 
-    user_answers = []
 
+# --- Display Quiz in Streamlit ---
+
+st.subheader("📝 Take the Quiz")
+
+quiz_raw = st.session_state.get("quiz_raw", "")
+
+questions = parse_quiz(quiz_raw)
+
+user_answers = {}
+
+with st.form("quiz_form"):
     for i, q in enumerate(questions):
-        st.write(f"**{q['question']}**")
-        choice = st.radio("", q["options"], key=f"quiz{i}")
-        user_answers.append(choice[0])
-
-    if st.button("Submit Answers"):
-        score = sum(
-            user_answers[i] == questions[i]["answer"]
-            for i in range(len(questions))
+        st.markdown(f"### {q['question']}")
+        user_answers[i] = st.radio(
+            f"Select an answer for question {i+1}",
+            q["options"],
+            index=None,
+            key=f"q{i}"
         )
-        st.success(f"🎉 Your Score: **{score}/5**")
+
+    submitted = st.form_submit_button("Submit Answers")
+
+
+# --- Score the Quiz ---
+
+if submitted:
+    score = 0
+    for i, q in enumerate(questions):
+        if user_answers[i] and user_answers[i][0] == q["answer"]:
+            score += 1
+
+    st.success(f"🎉 Your Score: **{score}/{len(questions)}**")
+
+
