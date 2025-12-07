@@ -22,8 +22,7 @@ COPY . .
 
 # --- NEW CHANGES START HERE ---
 # Expose the default Streamlit port
-EXPOSE 8501
-
+EXPOSE 7860
 # Healthcheck (Optional but good for robustness)
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
 
