@@ -252,3 +252,22 @@ if st.session_state.quiz_raw:
             for i in range(len(questions))
         )
         st.success(f"🎉 Your Score: **{score}/5**")
+
+
+# ============================================================
+# EVALUATION SECTION
+# ============================================================
+st.subheader("💬 Evaluation")
+
+if st.button("Evaluate Answers"):
+    with st.spinner("Evaluating answers..."):
+        evaluation = evaluate_teacher_response(st.session_state.transcript, st.session_state.quiz_raw, st.session_state.user_answers)
+
+    st.session_state.evaluation = evaluation
+
+if st.session_state.evaluation:
+    st.text_area("Evaluation", st.session_state.evaluation, height=200)
+
+# ============================================================
+# END OF FILE
+# ============================================================
