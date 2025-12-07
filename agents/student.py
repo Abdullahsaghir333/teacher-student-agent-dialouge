@@ -20,6 +20,9 @@ class StudentAgent:
             api_key=OPENAI_API_KEY
         )
 
+
+
+
         self.prompt = PromptTemplate(
             input_variables=["topic", "teacher_reply"],
             template="""

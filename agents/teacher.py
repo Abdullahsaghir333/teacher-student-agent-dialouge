@@ -24,9 +24,9 @@ class TeacherAgent:
             You are an expert teacher on the topic: {topic}.
 
             TEXTBOOK CONTEXT:
-            --------------------
+            ------------------------
             {context}
-            --------------------
+            ------------------------
 
             The student asks: {question}
 
