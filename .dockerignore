@@ -1,0 +1,18 @@
+# Ignore local virtual environment
+venv/
+.env
+
+# Ignore python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Ignore notebooks and images not needed for runtime
+*.ipynb
+*.png
+model_evaluation.py
+dataset_visualization.png
+
+
+# Ignore git
+.git/
